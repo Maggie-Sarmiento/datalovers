@@ -2,7 +2,7 @@
 
 import studio from './data/ghibli/ghibli.js';
 import Films from './data.js';
-import { showMorePopular, showYearN, showSortAZ, searchWord, loopShowFilms, filterlist, filterByProductor, quizMood, producer_list, director_list } from './order.js';
+import { showMorePopular, showYearN, showSortAZ, searchWord, filterlist, filterByProductor, quizMood, producer_list, director_list } from './order.js';
 import People from './people.js';
 import Location from './locations.js';
 
@@ -11,54 +11,19 @@ const filmsDom = document.getElementById("container_cards")
 const infoFilms = document.getElementById("container_info")
 const peopleFilms = document.getElementById("container_people")
 const locationFilms = document.getElementById("container_locations")
+const sectionGhibli = document.querySelector(".ghibli_section")
+const sectionSlide = document.querySelector(".slide_section")
+const infoOfFilm = document.getElementById("info_film")
+const organize = document.getElementById("organize")
+const titleMain = document.querySelector(".title_main")
+const sectionQuiz = document.querySelector(".quiz_section")
 let filmsObj = studio.films;
 
 
 
 // ----- Seccion del NAV -----
-document.getElementById('logonav').addEventListener('click', function () { location.reload() })
+// document.getElementById('logonav').addEventListener('click', function () { location.reload() })
 
-// Logica que muestra la info Ghibli
-const sectionGhibli = document.querySelector(".ghibli_section")
-const sectionSlide = document.querySelector(".slide_section")
-document.getElementById("ghibli").addEventListener('click', function () {
-    document.getElementById("info_film").innerHTML = ""
-    document.getElementById("organize").innerHTML = ""
-    filmsDom.innerHTML = ""
-    sectionGhibli.style.display = 'flex'
-    sectionSlide.style.display = 'none'
-    sectionQuiz.style.display = 'none'
-})
-
-// Logica que muestra el Quiz Ghibli
-const titleMain = document.querySelector(".title_main")
-const sectionQuiz = document.querySelector(".quiz_section")
-document.getElementById("quiz").addEventListener('click', function () {
-    document.getElementById("info_film").innerHTML = ""
-    document.getElementById("organize").innerHTML = ""
-    titleMain.style.display = 'none'
-    filmsDom.innerHTML = ""
-    sectionSlide.style.display = 'flex'
-    sectionQuiz.style.display = 'flex'
-    sectionGhibli.style.display = 'none'
-})
-
-// logica que busca peliculas relacionadas con una palabra
-document.getElementById("search").addEventListener('keypress', function (e) {
-    if (e.key == 'Enter') {
-        const word = document.getElementById("search").value
-        document.getElementById("info_film").innerHTML = ""
-        document.getElementById("organize").innerHTML = ""
-        filmsDom.innerHTML = ""
-        sectionQuiz.style.display = 'none'
-        sectionGhibli.style.display = 'none'
-        searchWord(word)
-    }
-})
-
-
-//  Hace un loop para recorrer el objeto.
-loopShowFilms(filmsObj)
 
 // Función que recibe una instancia de clase de las peliculas y las pinta
 function showFilms(film) {
@@ -76,11 +41,66 @@ function showFilms(film) {
     `
     filmsDom.appendChild(hijo)
     document.getElementById(id).addEventListener('click', function () {
+        infoOfFilm.style.display = 'flex'
+        organize.style.display = 'flex'
         const titlesInfoFilm = document.querySelector(".titles_info_film")
         titlesInfoFilm.style.display = 'flex'
+        console.log(titlesInfoFilm);
         selectFilm(id)
     })
 }
+
+// ---- Loop que crea una instancia de la clase Films y llama a showfilms
+function loopShowFilms(objFilms){
+    for (const film of objFilms){
+        const filmValues = new Films({id: film.id, poster: film.poster, title: film.title, score: film.rt_score})
+        showFilms(filmValues)
+    }
+}
+
+// Logica que muestra la info Ghibli
+document.getElementById("ghibli").addEventListener('click', function () {
+    infoOfFilm.style.display = 'none'
+    titleMain.style.display = 'none'
+    organize.style.display = 'none'
+    filmsDom.innerHTML = ""
+    sectionSlide.style.display = 'none'
+    sectionQuiz.style.display = 'none'
+    sectionGhibli.style.display = 'flex'
+})
+
+// Logica que muestra el Quiz Ghibli
+document.getElementById("quiz").addEventListener('click', function () {
+    infoOfFilm.style.display = 'none'
+    organize.style.display = 'none'
+    titleMain.style.display = 'none'
+    sectionGhibli.style.display = 'none'
+    sectionSlide.style.display = 'flex'
+    sectionQuiz.style.display = 'flex'
+})
+
+// logica que busca peliculas relacionadas con una palabra
+document.getElementById("search").addEventListener('keypress', function (e) {
+    if (e.key == 'Enter') {
+        const word = document.getElementById("search").value
+        infoOfFilm.style.display = 'none'
+        organize.style.display = 'none'
+        sectionQuiz.style.display = 'none'
+        sectionGhibli.style.display = 'none'
+        titleMain.style.display = ''
+        filmsDom.innerHTML = ""
+        sectionSlide.style.display = 'flex'
+        let search = searchWord(filmsObj, word)
+        console.log(search)
+        loopShowFilms(search)
+    }
+})
+
+
+//  Hace un loop para recorrer el objeto.
+loopShowFilms(filmsObj)
+
+
 
 // Funcion que busca la pelicula selecionada
 function selectFilm(id) {
@@ -138,8 +158,9 @@ function infoPeople(peopleFilm) {
 // Función que recibe una instancia de clase de la información de las peliculas y la pinta.
 function showInfoFilm(filmInfo) {
     titleMain.style.display = 'none'
-    document.getElementById("container_cards").innerHTML = ""
-    document.getElementById("organize").innerHTML = ""
+    filmsDom.innerHTML = ""
+    organize.style.display = 'none'
+    infoFilms.innerHTML = ""
     const hijo = document.createElement("div")
     hijo.classList.add("info-card")
     hijo.innerHTML = ` 
@@ -211,35 +232,40 @@ function showLocations(locationValues) {
 // ---------  Seccion de ordenamiento  -----------
 // ordenar por popularidad
 document.getElementById('more_popular').addEventListener('click', function () {
-    document.getElementById("container_cards").innerHTML = ""
-    showMorePopular()
+    filmsDom.innerHTML = ""
+    let popular = showMorePopular(filmsObj)
+    loopShowFilms(popular)
 })
 
 // Ordenar por los más recientes
 document.getElementById('news').addEventListener('click', function () {
-    document.getElementById("container_cards").innerHTML = ""
-    showYearN('news')
+    filmsDom.innerHTML = ""
+    let yearN = showYearN('news', filmsObj)
+    loopShowFilms(yearN)
 })
 // Ordenar por los más antiguos 
 document.getElementById('olds').addEventListener('click', function () {
-    document.getElementById("container_cards").innerHTML = ""
-    showYearN('olds')
+    filmsDom.innerHTML = ""
+    let yearN = showYearN('olds', filmsObj)
+    loopShowFilms(yearN)
 })
 
 // Ordenar alfabeticamente A-Z
 document.getElementById('sortaz').addEventListener('click', function () {
-    document.getElementById("container_cards").innerHTML = ""
-    showSortAZ('sortaz')
+    filmsDom.innerHTML = ""
+    let sortAZ = showSortAZ('sortaz', filmsObj)
+    loopShowFilms(sortAZ)
 })
 // Ordenar alfabeticamente Z-A
 document.getElementById('sortza').addEventListener('click', function () {
-    document.getElementById("container_cards").innerHTML = ""
-    showSortAZ('sortza')
+    filmsDom.innerHTML = ""
+    let sortZA = showSortAZ('sortza', filmsObj)
+    loopShowFilms(sortZA)
 })
 
 
 // funcion que filtra la data y devuelve la de interes
-filterlist()
+filterlist(filmsObj)
 document.getElementById("filter").innerHTML = `
       <form >
       <label for="director" >Directores:
@@ -269,19 +295,21 @@ document.getElementById("filter").innerHTML = `
      </form>
   `
 document.getElementById("director").addEventListener("change", function (event) {
-    document.getElementById("container_cards").innerHTML = ""
-    filterByProductor(event.target.value)
+    filmsDom.innerHTML = ""
+    let director = filterByProductor(filmsObj, event.target.value)
+    director.map(showFilms)
 });
 document.getElementById("producer").addEventListener("change", function (event) {
-    document.getElementById("container_cards").innerHTML = ""
-    filterByProductor(event.target.value)
+    filmsDom.innerHTML = ""
+    let productor = filterByProductor(filmsObj, event.target.value)
+    productor.map(showFilms)
 });
 
 
 
-// Seleccionar pregunta
+// Seleccionar pregunta del Quiz
 document.getElementById("quiz").addEventListener("click", function quiz() {
-    document.getElementById("container_cards").innerHTML = ""
+    filmsDom.innerHTML = ""
     document.getElementById("quiz_container").innerHTML = `
     <form >
     <label for="director" >¿Cuál es tu nivel de energía ahora?
@@ -293,8 +321,8 @@ document.getElementById("quiz").addEventListener("click", function quiz() {
   </select>
     `
     document.getElementById("quizMood").addEventListener("change", function (event) {
-        quizMood(event.target.value);
-
+        let quiz = quizMood(filmsObj, event.target.value);
+        showQuiz(quiz)
     });
 });
 
@@ -316,7 +344,3 @@ function showQuiz(allAges) {
   </div>
     `
 }
-
-
-export { showFilms, showQuiz }
-export { filmsObj }

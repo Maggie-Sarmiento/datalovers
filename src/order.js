@@ -1,22 +1,17 @@
-import { showFilms, showQuiz } from './main.js'
 import Films from './data.js'
 import People from './people.js'
-import { filmsObj} from './main.js'
 
-
-function loopShowFilms(objFilms){
-    for (const film of objFilms){
-        const filmValues = new Films({id: film.id, poster: film.poster, title: film.title, score: film.rt_score})
-        showFilms(filmValues)
-    }
-}
 
 // función que busca en el objeto las peliculas que coincidan con el string dada por el usuario
-function searchWord(word){
+function searchWord(filmsObj, word){
     //const people = filmsObj["people"]
+    console.log(filmsObj);
     const foundword = filmsObj.filter(function(film){
         let myReg = new RegExp(word, "i")
-        let people_match = film.people.map(person => person.name.match(myReg) != null )
+        let people = film.people
+        console.log(film);
+        let people_match = people.map(person => person.name.match(myReg) != null )
+        console.log(people_match);
         if(film.title.match(myReg) != null || 
         film.description.match(myReg) != null || 
         film.director.match(myReg) != null ||
@@ -27,22 +22,23 @@ function searchWord(word){
             return true
         } else {
             return false
-        }
+        } 
     })
-    loopShowFilms(foundword)
+    console.log(foundword);
+    return foundword
 }
 
 
 // función que rrecorre un array con las peliculas ordenadas del más popular al menos. 
-function showMorePopular(){
+function showMorePopular(filmsObj){
     const sortPopular = filmsObj.sort(function(f1, f2){
-        return f1.rt_score - f2.rt_score
+        return f2.rt_score - f1.rt_score
     })
-    loopShowFilms(sortPopular)
+    return sortPopular
 }
 
 // función que rrecorre un array con las peliculas ordenadas del la pelicula más reciente o la menos.
-function showYearN(idElement){
+function showYearN(idElement, filmsObj){
     const sortYear = filmsObj.sort(function(f1, f2){
         if (f1.release_date < f2.release_date){
             return 1
@@ -52,15 +48,15 @@ function showYearN(idElement){
     })
 
     if (idElement === 'news'){
-        loopShowFilms(sortYear)
+        return sortYear
     } else if (idElement === 'olds'){
         let sortYearO = sortYear.reverse()
-        loopShowFilms(sortYearO)
+        return sortYearO
     }
 }
 
 // función que rrecorre un array con las peliculas ordenadas alfabeticamente de la A-Z y la Z-A
-function showSortAZ(idElement){
+function showSortAZ(idElement, filmsObj){
     const sortAZ = filmsObj.sort(function(f1, f2){
         if (f1.title > f2.title){
             return 1
@@ -70,16 +66,16 @@ function showSortAZ(idElement){
     })
 
     if (idElement === 'sortaz'){
-        loopShowFilms(sortAZ)
+        return sortAZ
     } else if (idElement === 'sortza'){
         let sortAZReverse = sortAZ.reverse()
-        loopShowFilms(sortAZReverse)
+        return sortAZReverse
     }
 }
 
 let producer_list = ""
 let director_list = ""
-function filterlist() {
+function filterlist(filmsObj) {
     let producers = filmsObj.map((filmsObj) => filmsObj.producer);
     producer_list = Object.values(producers).reduce((list, prod) => {
         if (!list.includes(prod)) {
@@ -99,7 +95,7 @@ function filterlist() {
 }
   
   
-function filterByProductor(dir_choice, prod_choice) {
+function filterByProductor(filmsObj, dir_choice, prod_choice) {
     // document.getElementById("container_cards").innerHTML = ""
     let filteredList = [];
     for (let filmkey of filmsObj) {
@@ -115,14 +111,17 @@ function filterByProductor(dir_choice, prod_choice) {
             })
             filteredList.push(filmClass);
         }
-    } filteredList.map(showFilms);
+    } 
+    return filteredList
 }
 
 function getRandomInt(min, max) {
+/*     console.log(min, max)
+    console.log(Math.floor(Math.random() * (max - min))) */
     return (Math.floor(Math.random() * (max - min)) + min);
 }
-  
-function quizMood(mood) {
+
+function quizMood(filmsObj, mood) {
     let arrayJung = [];
     let arrayAdult = [];
     let arrayElder = [];
@@ -163,26 +162,26 @@ function quizMood(mood) {
                 })
                 let elder = Object.entries(elderCharacters);
                 arrayElder.push(elder);
-
             }
         }
 
     } let elderChar = arrayElder[getRandomInt(0, 15)];
-    let adultChar = arrayAdult[getRandomInt(0, 30)];
     let jungChar = arrayJung[getRandomInt(0, 30)];
-    moodSelection(elderChar, adultChar, jungChar, mood)
+    let adultChar = arrayAdult[getRandomInt(0, 30)];
+    console.log(moodSelection(elderChar, adultChar, jungChar, mood))
+    return moodSelection(elderChar, adultChar, jungChar, mood)
 }
   
   
 function moodSelection(elderChar, adultChar, jungChar, mood) {
     if (mood === "jung") {
-        showQuiz(jungChar)
+        return jungChar
     } else if (mood === "adult") {
-        showQuiz(adultChar)
+        return adultChar
     } else if (mood === "elder") {
-        showQuiz(elderChar)
+        return elderChar
     }
 }
 
 
-export {showMorePopular, showYearN, showSortAZ, searchWord, loopShowFilms, filterlist, filterByProductor, quizMood, director_list, producer_list}
+export {showMorePopular, showYearN, showSortAZ, searchWord, filterlist, filterByProductor, getRandomInt, quizMood, moodSelection, director_list, producer_list}
