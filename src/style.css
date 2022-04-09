@@ -384,6 +384,7 @@ section{
     max-width: 282px;
     border-radius: 30px;
     margin-bottom: .5em;
+    align-items: space-between ;
 }
 
 
@@ -458,7 +459,6 @@ footer{
         width: min-content;
         height: max-content;
         align-items: center ;
-        
     }
 
     .filter_section:hover>.filter {
