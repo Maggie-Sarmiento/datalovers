@@ -4,14 +4,10 @@ import People from './people.js'
 
 // función que busca en el objeto las peliculas que coincidan con el string dada por el usuario
 function searchWord(filmsObj, word){
-    //const people = filmsObj["people"]
-    console.log(filmsObj);
     const foundword = filmsObj.filter(function(film){
         let myReg = new RegExp(word, "i")
         let people = film.people
-        console.log(film);
         let people_match = people.map(person => person.name.match(myReg) != null )
-        console.log(people_match);
         if(film.title.match(myReg) != null || 
         film.description.match(myReg) != null || 
         film.director.match(myReg) != null ||
@@ -24,15 +20,14 @@ function searchWord(filmsObj, word){
             return false
         } 
     })
-    console.log(foundword);
     return foundword
 }
 
 
 // función que rrecorre un array con las peliculas ordenadas del más popular al menos. 
 function showMorePopular(filmsObj){
-    const sortPopular = filmsObj.sort(function(f1, f2){
-        return f2.rt_score - f1.rt_score
+    const sortPopular = filmsObj.sort(function(film1, film2){
+        return film2.rt_score - film1.rt_score
     })
     return sortPopular
 }
@@ -57,8 +52,8 @@ function showYearN(idElement, filmsObj){
 
 // función que rrecorre un array con las peliculas ordenadas alfabeticamente de la A-Z y la Z-A
 function showSortAZ(idElement, filmsObj){
-    const sortAZ = filmsObj.sort(function(f1, f2){
-        if (f1.title > f2.title){
+    const sortAZ = filmsObj.sort(function(film1, film2){
+        if (film1.title > film2.title){
             return 1
         } else {
             return -1
@@ -83,8 +78,8 @@ function filterlist(filmsObj) {
         }
         return list;
     }, [])
-    let directors = filmsObj.map((filmsObj) => filmsObj.director);
 
+    let directors = filmsObj.map((filmsObj) => filmsObj.director);
     director_list = Object.values(directors).reduce((list, dir) => {
         if (!list.includes(dir)) {
             list.push(dir);
@@ -116,8 +111,6 @@ function filterByProductor(filmsObj, dir_choice, prod_choice) {
 }
 
 function getRandomInt(min, max) {
-/*     console.log(min, max)
-    console.log(Math.floor(Math.random() * (max - min))) */
     return (Math.floor(Math.random() * (max - min)) + min);
 }
 
@@ -168,7 +161,6 @@ function quizMood(filmsObj, mood) {
     } let elderChar = arrayElder[getRandomInt(0, 15)];
     let jungChar = arrayJung[getRandomInt(0, 30)];
     let adultChar = arrayAdult[getRandomInt(0, 30)];
-    console.log(moodSelection(elderChar, adultChar, jungChar, mood))
     return moodSelection(elderChar, adultChar, jungChar, mood)
 }
   

@@ -20,6 +20,16 @@ const sectionQuiz = document.querySelector(".quiz_section")
 let filmsObj = studio.films;
 
 
+//  Hace un loop para recorrer el objeto.
+loopShowFilms(filmsObj)
+
+// ---- Loop que crea una instancia de la clase Films y llama a showfilms
+function loopShowFilms(objFilms){
+    for (const film of objFilms){
+        const filmValues = new Films({id: film.id, poster: film.poster, title: film.title, score: film.rt_score})
+        showFilms(filmValues)
+    }
+}
 
 // ----- Seccion del NAV -----
 // document.getElementById('logonav').addEventListener('click', function () { location.reload() })
@@ -45,18 +55,11 @@ function showFilms(film) {
         organize.style.display = 'flex'
         const titlesInfoFilm = document.querySelector(".titles_info_film")
         titlesInfoFilm.style.display = 'flex'
-        console.log(titlesInfoFilm);
         selectFilm(id)
     })
 }
 
-// ---- Loop que crea una instancia de la clase Films y llama a showfilms
-function loopShowFilms(objFilms){
-    for (const film of objFilms){
-        const filmValues = new Films({id: film.id, poster: film.poster, title: film.title, score: film.rt_score})
-        showFilms(filmValues)
-    }
-}
+
 
 // Logica que muestra la info Ghibli
 document.getElementById("ghibli").addEventListener('click', function () {
@@ -91,14 +94,9 @@ document.getElementById("search").addEventListener('keypress', function (e) {
         filmsDom.innerHTML = ""
         sectionSlide.style.display = 'flex'
         let search = searchWord(filmsObj, word)
-        console.log(search)
         loopShowFilms(search)
     }
 })
-
-
-//  Hace un loop para recorrer el objeto.
-loopShowFilms(filmsObj)
 
 
 
@@ -175,7 +173,7 @@ function showInfoFilm(filmInfo) {
             <h5>${filmInfo.release_date}</h5>
         </div>
         <div class = "returnButton">
-            <img class="retbut" id="back" src="/img/54623azul.png" alt="Regresa a Inicio" />
+            <img class="retbut" id="back" src="https://svgshare.com/i/g4v.svg" alt="Regresa a Inicio" />
         </div>
     </div>
     `
